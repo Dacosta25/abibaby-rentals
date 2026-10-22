@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PayPal Hosted Fields Styling */
+.paypal-field iframe {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  padding: 12px;
+  background: #ffffff;
+  border: 2px solid #e5e7eb; /* Tailwind gray-200 */
+  transition: all 0.2s ease;
+}
+
+/* Focus state */
+.paypal-field iframe:focus {
+  border-color: #7c3aed; /* Tailwind purple-600 */
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+}
+
+/* Error state */
+.paypal-field-error iframe {
+  border-color: #dc2626; /* red-600 */
+  background: #fef2f2; /* red-50 */
+}
