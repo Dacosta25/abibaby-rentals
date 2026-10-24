@@ -7,17 +7,23 @@ import DateTimeSelection from "./DateTimeSelection.jsx";
 import Payment from "./Payment.jsx";
 import Confirmation from "./Confirmation.jsx";
 
+// Base URL for your live backend on Render.
+// Using a single constant avoids repeating the URL everywhere.
+const API_BASE = "https://abibaby-rentals-backend.onrender.com";
+
 export default function BookingPage() {
 
-  // Controls which step of the booking flow is shown (1–5)
+  // Controls which step of the booking flow is currently visible.
+  // Step order: 1 = Items → 2 = Customer → 3 = Date/Time → 4 = Payment → 5 = Confirmation
   const [step, setStep] = useState(1);
 
-  // Items fetched from backend database
+  // Items fetched from MongoDB through your backend.
   const [products, setProducts] = useState([]);
 
-  // Fetch items once when page loads
+  // Fetch items once when the page loads.
+  // This now uses your Render backend instead of localhost.
   useEffect(() => {
-    axios.get("http://localhost:5000/api/items")
+    axios.get(`${API_BASE}/api/items`)
       .then(res => {
         console.log("Fetched items:", res.data);
         setProducts(res.data); // store items in state
@@ -25,7 +31,7 @@ export default function BookingPage() {
       .catch(err => console.error("Failed to load items:", err));
   }, []);
 
-  // Cart holds selected rental items
+  // Cart holds selected rental items.
   const [cart, setCart] = useState([]);
 
   // Customer details (name, email, phone, etc.)
@@ -37,21 +43,21 @@ export default function BookingPage() {
   // Final booking object after payment
   const [finalBooking, setFinalBooking] = useState(null);
 
-  // Add item to cart (prevent duplicates)
+  // Add item to cart — prevents duplicates by checking ID.
   const addToCart = (item) => {
     if (!cart.find((i) => i._id === item._id)) {
       setCart([...cart, item]);
     }
   };
 
-  // Remove item from cart
+  // Remove item from cart by ID.
   const removeFromCart = (id) => {
     setCart(cart.filter((i) => i._id !== id));
   };
 
-  // -------------------------------
+  // ---------------------------------------------------------
   // STEP 1 — ITEM SELECTION
-  // -------------------------------
+  // ---------------------------------------------------------
   if (step === 1) {
     return (
       <div className="min-h-screen bg-gray-100 pt-24 px-6">
@@ -69,9 +75,9 @@ export default function BookingPage() {
                 key={item._id}
                 className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden"
               >
-                {/* Item Image */}
+                {/* Item Image — served from your Render backend */}
                 <img
-                  src={`http://localhost:5000${item.imageUrl}`}
+                  src={`${API_BASE}${item.imageUrl}`}
                   alt={item.name}
                   className="h-48 w-full object-cover"
                 />
@@ -100,7 +106,7 @@ export default function BookingPage() {
             ))}
           </div>
 
-          {/* Cart Section (only shows when items added) */}
+          {/* Cart Section — only appears when items have been added */}
           {cart.length > 0 && (
             <div className="mt-16 bg-white p-6 rounded-xl shadow-lg">
               <h2 className="text-2xl font-bold mb-4">Your Booking Cart</h2>
@@ -145,9 +151,9 @@ export default function BookingPage() {
     );
   }
 
-  // -------------------------------
+  // ---------------------------------------------------------
   // STEP 2 — CUSTOMER DETAILS
-  // -------------------------------
+  // ---------------------------------------------------------
   if (step === 2) {
     return (
       <CustomerDetails
@@ -160,9 +166,9 @@ export default function BookingPage() {
     );
   }
 
-  // -------------------------------
+  // ---------------------------------------------------------
   // STEP 3 — DATE & TIME SELECTION
-  // -------------------------------
+  // ---------------------------------------------------------
   if (step === 3) {
     return (
       <DateTimeSelection
@@ -175,9 +181,9 @@ export default function BookingPage() {
     );
   }
 
-  // -------------------------------
+  // ---------------------------------------------------------
   // STEP 4 — PAYMENT
-  // -------------------------------
+  // ---------------------------------------------------------
   if (step === 4) {
     return (
       <Payment
@@ -195,9 +201,9 @@ export default function BookingPage() {
     );
   }
 
-  // -------------------------------
+  // ---------------------------------------------------------
   // STEP 5 — CONFIRMATION
-  // -------------------------------
+  // ---------------------------------------------------------
   if (step === 5) {
     return <Confirmation booking={finalBooking} />;
   }

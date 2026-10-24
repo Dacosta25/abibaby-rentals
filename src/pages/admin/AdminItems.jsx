@@ -3,6 +3,10 @@ import axios from "axios";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 
+// Base URL for your live backend on Render.
+// Keeping this in one place avoids repeating the URL everywhere.
+const API_BASE = "https://abibaby-rentals-backend.onrender.com";
+
 export default function AdminItems() {
   const [items, setItems] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -11,16 +15,22 @@ export default function AdminItems() {
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
+  // Admin token stored after login
   const token = localStorage.getItem("adminToken");
 
   /* -----------------------------------------
-     FETCH ITEMS
+     FETCH ITEMS (protected route)
+     Loads all items from the backend for admin management.
   ----------------------------------------- */
   const loadItems = async () => {
-    const res = await axios.get("http://localhost:5000/admin/items", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setItems(res.data);
+    try {
+      const res = await axios.get(`${API_BASE}/admin/items`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setItems(res.data);
+    } catch (err) {
+      console.error("Failed to fetch items:", err);
+    }
   };
 
   useEffect(() => {
@@ -29,6 +39,7 @@ export default function AdminItems() {
 
   /* -----------------------------------------
      SAVE ITEM (ADD OR UPDATE)
+     Handles both creating new items and editing existing ones.
   ----------------------------------------- */
   const saveItem = async (e) => {
     e.preventDefault();
@@ -43,17 +54,17 @@ export default function AdminItems() {
       let res;
 
       if (editingItem) {
-        // UPDATE
+        // UPDATE existing item
         res = await axios.put(
-          `http://localhost:5000/admin/items/${editingItem._id}`,
+          `${API_BASE}/admin/items/${editingItem._id}`,
           form,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
       } else {
-        // CREATE
-        res = await axios.post("http://localhost:5000/admin/items", form, {
+        // CREATE new item
+        res = await axios.post(`${API_BASE}/admin/items`, form, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
@@ -67,40 +78,50 @@ export default function AdminItems() {
 
   /* -----------------------------------------
      DELETE ITEM
+     Removes an item permanently from the database.
   ----------------------------------------- */
   const deleteItem = async (id) => {
-    await axios.delete(`http://localhost:5000/admin/items/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    await loadItems();
+    try {
+      await axios.delete(`${API_BASE}/admin/items/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      await loadItems();
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
   };
 
   /* -----------------------------------------
      BLOCK / UNBLOCK DATE
+     Allows admin to mark specific dates as unavailable.
   ----------------------------------------- */
   const toggleDate = async (date) => {
     const formatted = date.toISOString().split("T")[0];
     const isBlocked = selectedItem.blockedDates.includes(formatted);
 
     const url = isBlocked
-      ? `http://localhost:5000/admin/items/${selectedItem._id}/unblock-date`
-      : `http://localhost:5000/admin/items/${selectedItem._id}/block-date`;
+      ? `${API_BASE}/admin/items/${selectedItem._id}/unblock-date`
+      : `${API_BASE}/admin/items/${selectedItem._id}/block-date`;
 
-    await axios.post(
-      url,
-      { date: formatted },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    try {
+      await axios.post(
+        url,
+        { date: formatted },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-    await loadItems();
-    setSelectedItem(items.find((i) => i._id === selectedItem._id));
+      await loadItems();
+      setSelectedItem(items.find((i) => i._id === selectedItem._id));
+    } catch (err) {
+      console.error("Failed to toggle date:", err);
+    }
   };
 
   return (
     <>
       <h1 className="text-3xl font-bold mb-6">Manage Items</h1>
 
+      {/* Add Item Button */}
       <button
         onClick={() => {
           setEditingItem(null);
@@ -113,6 +134,7 @@ export default function AdminItems() {
 
       {/* -----------------------------------------
           ITEMS LIST
+          Displays all items with edit/delete/availability options.
       ----------------------------------------- */}
       <div className="bg-white p-6 rounded shadow">
         {items.map((item) => (
@@ -123,15 +145,17 @@ export default function AdminItems() {
               <p>Category: {item.category}</p>
               <p>Available: {item.availability ? "Yes" : "No"}</p>
 
+              {/* Item Image */}
               {item.imageUrl && (
                 <img
-                  src={`http://localhost:5000${item.imageUrl}`}
+                  src={`${API_BASE}${item.imageUrl}`}
                   alt={item.name}
                   className="w-24 h-24 object-cover mt-2 rounded"
                 />
               )}
             </div>
 
+            {/* Action Buttons */}
             <div className="flex gap-2">
               <button
                 onClick={() => {
@@ -170,7 +194,7 @@ export default function AdminItems() {
       {modalOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
-          style={{ pointerEvents: "auto" }}   // ⭐ FIX: allow clicks
+          style={{ pointerEvents: "auto" }} // Allows clicking inside modal
         >
           <form
             onSubmit={saveItem}
@@ -181,6 +205,7 @@ export default function AdminItems() {
               {editingItem ? "Edit Item" : "Add Item"}
             </h2>
 
+            {/* Item Name */}
             <input
               name="name"
               defaultValue={editingItem?.name}
@@ -189,6 +214,7 @@ export default function AdminItems() {
               required
             />
 
+            {/* Price */}
             <input
               name="price"
               defaultValue={editingItem?.price}
@@ -197,6 +223,7 @@ export default function AdminItems() {
               required
             />
 
+            {/* Category */}
             <select
               name="category"
               defaultValue={editingItem?.category}
@@ -209,14 +236,14 @@ export default function AdminItems() {
               <option value="Electronics">Electronics</option>
             </select>
 
-            {/* IMAGE UPLOAD */}
+            {/* Image Upload */}
             <input
               type="file"
               name="image"
               className="w-full p-2 border rounded mb-3"
             />
 
-            {/* AVAILABILITY */}
+            {/* Availability */}
             <select
               name="availability"
               defaultValue={editingItem?.availability ? "true" : "false"}
@@ -226,7 +253,7 @@ export default function AdminItems() {
               <option value="false">Unavailable</option>
             </select>
 
-            {/* ⭐ FIX: submit button */}
+            {/* Save Button */}
             <button
               type="submit"
               className="w-full bg-purple-600 text-white p-2 rounded"
@@ -234,6 +261,7 @@ export default function AdminItems() {
               Save
             </button>
 
+            {/* Cancel Button */}
             <button
               type="button"
               onClick={() => setModalOpen(false)}
@@ -255,6 +283,7 @@ export default function AdminItems() {
               Manage Availability — {selectedItem.name}
             </h2>
 
+            {/* Calendar showing blocked dates */}
             <Calendar
               onClickDay={toggleDate}
               tileClassName={({ date }) => {

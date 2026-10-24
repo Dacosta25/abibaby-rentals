@@ -1,34 +1,41 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+// Base URL for your live backend on Render.
+// Keeping this in one place avoids repeating the URL everywhere.
+const API_BASE = "https://abibaby-rentals-backend.onrender.com";
+
 export default function AdminDashboard() {
-  const [stats, setStats] = useState(null);
-  const [upcoming, setUpcoming] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [stats, setStats] = useState(null);          // Dashboard summary numbers
+  const [upcoming, setUpcoming] = useState([]);      // Upcoming bookings list
+  const [loading, setLoading] = useState(true);      // Loading state
+  const [error, setError] = useState("");            // Error message
 
- useEffect(() => {
-  async function loadDashboard() {
-    try {
-      const res = await axios.get("http://localhost:5000/admin/dashboard", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("adminToken")}`
-        }
-      });
+  // Fetch dashboard data (protected route)
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const res = await axios.get(`${API_BASE}/admin/dashboard`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        });
 
-      setStats(res.data.stats);
-      setUpcoming(res.data.upcoming);
-    } catch (err) {
-      console.error(err);
-      setError("Failed to load dashboard data");
-    } finally {
-      setLoading(false);
+        // Store dashboard stats + upcoming bookings
+        setStats(res.data.stats);
+        setUpcoming(res.data.upcoming);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load dashboard data");
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
-  loadDashboard();
-}, []);
+    loadDashboard();
+  }, []);
 
+  // Loading screen
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-xl">
@@ -37,6 +44,7 @@ export default function AdminDashboard() {
     );
   }
 
+  // Error screen
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-600 text-xl">
@@ -54,7 +62,7 @@ export default function AdminDashboard() {
           Admin Dashboard
         </h1>
 
-        {/* Stats Cards */}
+        {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
           <StatCard title="Total Bookings" value={stats.totalBookings} />
           <StatCard title="Upcoming Events" value={stats.upcomingEvents} />
@@ -62,7 +70,7 @@ export default function AdminDashboard() {
           <StatCard title="Low Stock Items" value={stats.lowStockItems} />
         </div>
 
-        {/* Upcoming Events */}
+        {/* Upcoming Bookings */}
         <div className="bg-white p-8 rounded-xl shadow-md mb-12">
           <h2 className="text-2xl font-semibold mb-6">Upcoming Bookings</h2>
 
@@ -106,6 +114,7 @@ export default function AdminDashboard() {
   );
 }
 
+// Small reusable card component for dashboard stats
 function StatCard({ title, value }) {
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
