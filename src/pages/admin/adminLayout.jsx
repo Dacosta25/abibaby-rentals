@@ -9,8 +9,9 @@ export default function AdminLayout() {
         <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
 
         <nav className="flex flex-col gap-3">
+
           <NavLink
-            to="/admin/dashboard"
+            to="dashboard"
             className={({ isActive }) =>
               isActive ? "text-purple-600 font-semibold" : "text-gray-700"
             }
@@ -19,7 +20,7 @@ export default function AdminLayout() {
           </NavLink>
 
           <NavLink
-            to="/admin/bookings"
+            to="bookings"
             className={({ isActive }) =>
               isActive ? "text-purple-600 font-semibold" : "text-gray-700"
             }
@@ -28,7 +29,7 @@ export default function AdminLayout() {
           </NavLink>
 
           <NavLink
-            to="/admin/items"
+            to="items"
             className={({ isActive }) =>
               isActive ? "text-purple-600 font-semibold" : "text-gray-700"
             }
@@ -37,11 +38,12 @@ export default function AdminLayout() {
           </NavLink>
 
           <NavLink
-            to="/admin/login"
+            to="login"
             className="text-red-600 font-semibold"
           >
             Logout
           </NavLink>
+
         </nav>
       </aside>
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import logo from "../../assets/logo/abibabylogo.png";
 
 export default function Navbar() {
@@ -28,21 +29,24 @@ export default function Navbar() {
                    shadow-[0_4px_20px_rgba(0,0,0,0.15)] rounded-b-2xl"
       >
 
-        <div className="flex items-center space-x-3 cursor-pointer">
+        {/* Logo */}
+        <Link to="" className="flex items-center space-x-3 cursor-pointer">
           <img src={logo} alt="Abibaby Rentals" className="h-12 w-auto" />
-        </div>
+        </Link>
 
+        {/* Navigation */}
         <div className="hidden md:flex items-center space-x-8 font-medium">
-          <a href="/" className="text-white hover:text-purple-200 transition">Home</a>
-          <a href="/products" className="text-white hover:text-purple-200 transition">Products</a>
-          <a href="/booking" className="text-white hover:text-purple-200 transition">Booking</a>
-          <a href="/contact" className="text-white hover:text-purple-200 transition">Contact</a>
+          <Link to="" className="text-white hover:text-purple-200 transition">Home</Link>
+          <Link to="products" className="text-white hover:text-purple-200 transition">Products</Link>
+          <Link to="booking" className="text-white hover:text-purple-200 transition">Booking</Link>
+          <Link to="contact" className="text-white hover:text-purple-200 transition">Contact</Link>
         </div>
 
+        {/* Cart + Book Now */}
         <div className="flex items-center space-x-6">
 
           {/* Cart Icon */}
-          <a href="/cart" className="relative cursor-pointer">
+          <Link to="cart" className="relative cursor-pointer">
             <span className="material-icons-round text-white text-3xl">
               shopping_cart
             </span>
@@ -52,14 +56,15 @@ export default function Navbar() {
                 {cartCount}
               </span>
             )}
-          </a>
+          </Link>
 
-          <a
-            href="/booking"
+          {/* Book Now */}
+          <Link
+            to="booking"
             className="px-5 py-2 bg-white text-purple-700 font-semibold rounded-full shadow-md hover:bg-purple-100 transition"
           >
             Book Now
-          </a>
+          </Link>
         </div>
       </nav>
     </header>

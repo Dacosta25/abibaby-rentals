@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 py-10 mt-20">
@@ -15,10 +17,10 @@ export default function Footer() {
         <div>
           <h3 className="text-xl font-semibold text-white mb-3">Quick Links</h3>
           <ul className="space-y-2">
-            <li><a href="/" className="hover:text-white">Home</a></li>
-            <li><a href="/products" className="hover:text-white">Products</a></li>
-            <li><a href="/booking" className="hover:text-white">Booking</a></li>
-            <li><a href="/contact" className="hover:text-white">Contact</a></li>
+            <li><Link to="" className="hover:text-white">Home</Link></li>
+            <li><Link to="products" className="hover:text-white">Products</Link></li>
+            <li><Link to="booking" className="hover:text-white">Booking</Link></li>
+            <li><Link to="contact" className="hover:text-white">Contact</Link></li>
           </ul>
         </div>
 
@@ -39,7 +41,7 @@ export default function Footer() {
       {/* Developer Branding */}
       <div className="mt-6 flex flex-col items-center justify-center gap-3">
         <img
-          src="/images/developer_logo.png"
+          src="/abibaby-rentals/images/developer_logo.png"
           alt="DevCosta Solutions Logo"
           className="h-12 w-auto object-contain bg-white p-2 rounded-lg shadow-md border border-purple-600"
         />

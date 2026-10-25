@@ -48,7 +48,7 @@ export default function Home() {
 
           {/* Button that takes the user to the booking page */}
           <button
-            onClick={() => navigate("/booking")}
+            onClick={() => navigate("booking")}
             className="px-10 py-4 bg-white text-purple-700 font-semibold rounded-full shadow-lg hover:bg-purple-100 transition"
           >
             Browse Rentals
@@ -86,7 +86,7 @@ export default function Home() {
 
                 {/* Button to start booking with this item */}
                 <button
-                  onClick={() => navigate("/booking")}
+                  onClick={() => navigate("booking")}
                   className="px-5 py-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-medium rounded-full shadow hover:opacity-90 transition"
                 >
                   Book Now
@@ -105,7 +105,7 @@ export default function Home() {
         </p>
 
         <button
-          onClick={() => navigate("/booking")}
+          onClick={() => navigate("booking")}
           className="px-8 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
         >
           Start Booking
